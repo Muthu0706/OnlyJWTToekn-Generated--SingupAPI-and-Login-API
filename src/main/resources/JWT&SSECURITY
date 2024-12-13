@@ -1,0 +1,54 @@
+
+1. Complexity: 
+
+   - Spring Security: Implementation might be more complex due to the variety of features.
+   - Pure JWT: Simpler for stateless APIs. JWT is straightforward to generate and validate.
+
+2. Statefulness:
+
+   - Spring Security: Can be stateful (sessions) or stateless (JWT).
+   - Pure JWT: Always stateless; no session storage is needed.
+
+3. Flexibility and Customization:
+   - Spring Security: Highly customizable and integrates easily with Spring applications.
+   - Pure JWT: Provides a flexible way to transfer claims but requires additional implementation for handling user sessions, security policies, etc.
+
+4. Use Cases:
+
+   - pring Security: Ideal for enterprise applications with complex security needs.
+   -Pure JWT: Best suited for microservices and API-based architectures where stateless authentication is needed.
+
+----------------------*********JWT******----------------------
+String jwt = Jwts.builder()
+        .setSubject(username)
+        .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+        .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+       .compact();
+       
+-----------------------************Spring Security***********----------------         
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+            .withUser("user").password("{noop}password").roles("USER")
+            .and()
+            .withUser("admin").password("{noop}admin").roles("ADMIN");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+            .antMatchers("/", "/home").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .formLogin().permitAll()
+            .and()
+            .logout().permitAll();
+    }
+}
+-------------------------------------------------------------------------
+       
